@@ -91,6 +91,7 @@ export default function UsersTable() {
     
     const{loading,users,errorMsg}=state
     const rows: Data[] = users.map((row) =>
+    // console.log(row.id)
     createData(
       row.id.value,
       row.name.first + " " + row.name.last,

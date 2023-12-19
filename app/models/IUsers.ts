@@ -1,6 +1,18 @@
 export interface IUsers {
   results?: (ResultsEntity)[] | null;
   info: Info;
+  gender: string;
+  name: Name;
+  location: Location;
+  email: string;
+  login: Login;
+  dob: DobOrRegistered;
+  registered: DobOrRegistered;
+  phone: string;
+  cell: string;
+  id: Id;
+  picture: Picture;
+  nat: string;
 }
 export interface ResultsEntity {
   gender: string;
@@ -53,7 +65,7 @@ export interface Login {
 }
 export interface DobOrRegistered {
   date: string;
-  age: number;
+  age: string;
 }
 export interface Id {
   name: string;
