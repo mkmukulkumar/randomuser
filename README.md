@@ -56,3 +56,29 @@ Future enhancements for the WebApp could include:
 ## Deployed on Vercel
 Check using the link below
 https://randomuser-mkmukulkumars-projects.vercel.app/
+
+## References:
+-Learn to Persist State in React Redux-Toolkit App using Redux-Persist
+https://www.youtube.com/watch?v=b88Z5POQBwI
+
+https://lightrains.com/blogs/redux-persist-with-next-js/
+
+https://redux-toolkit.js.org/usage/usage-guide#working-with-non-serializable-data
+
+-Login 
+https://mui.com/material-ui/getting-started/templates/
+
+-Table
+https://mui.com/material-ui/react-table/
+
+-API
+https://randomuser.me/
+
+-Fetching data
+https://www.youtube.com/watch?v=y7vNLQ_vbD4
+
+-Json Formater
+https://jsonformatter.org/json-viewer
+
+-Typescript basic
+https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html
