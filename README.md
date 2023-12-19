@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# randomuser WebApp
 
-## Getting Started
+## Requirements
+#### 1) Login page with dummy login details
+The WebApp features a user-friendly login page with dummy login details for testing purposes. Two users are available for login:
 
-First, run the development server:
+User 1:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Email: user1@example.com
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Password: password1
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+User 2:
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Email: user2@example.com
 
-## Learn More
+Password: password2
 
-To learn more about Next.js, take a look at the following resources:
+The authentication logic is implemented in the authenticated function. Upon successful authentication, user data is stored in local storage using Redux persist.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+#### 2)A table which contains the list of users from a dummy API (https://randomuser.me/documentation#multiple) OR any other free API you can find
+##### Axios usage 
+The WebApp displays a table containing a list of users retrieved from a dummy API. Axios is used to fetch data from the Random User API. The data is fetched using the UsersService.ts file and displayed in the table made from material UI. All the data is fetched but not shown in the table. Only some information is shown in the table.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+#### 3) ⁠After you login the app should remember the login state and should not go back to the login page, in the same manner if the app isn't logged in, the users list should not be accessible 
+The WebApp maintains login state persistence. If a user is logged in, the app remembers the login state and does not redirect to the login page. Conversely, if the user is not logged in, the user list is inaccessible. 
 
-## Deploy on Vercel
+Redux is utilized to store user information, including the username and authentication status (isauth). Redux persist is employed to store the isauth value in local storage, eliminating the need for repeated logins.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+#### 4.) Enable user search by name
+The WebApp enables users to search for other users by name. A Material UI search bar is implemented. All the data is fetched once in the array then the required info is stored in another variable "rows" then this rows variable is used to filter to enable search. The search bar keeps on searching as you type.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## App Load Time and Performance
+To optimize app load time and performance:
+
+- Proper data models using interfaces are implemented for readability and future data management.
+- Data is fetched once and then filtered for search operations, preventing redundant API requests.
+- Pagination is implemented in the table to facilitate efficient searching based on specific requirements.
+
+## MUI Usage
+Material UI is extensively used in the WebApp:
+- LoginPage is designed using Material UI components.
+- Navigation bar, table, and search bar for users are created using Material UI.
+
+## Redux Usage
+Redux is employed for state management:
+- User information, including the username and authentication status, is stored using Redux.
+- Redux persist is utilized to store the isauth value in local storage for seamless login experiences.
+
+## Possible Improvements
+Future enhancements for the WebApp could include:
+- Integration with a backend to fetch users from a database instead of directly writing in the code.
+- Consideration of using cookies for more efficient login session management when a backend is available. Currently, cookies are not implemented due to the absence of a backend.
+
+
+## Deployed on Vercel
+Check using the link below
+https://randomuser-mkmukulkumars-projects.vercel.app/
