@@ -15,7 +15,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import ButtonAppBar from "./components/navbar";
 import { useAppSelector } from "@/redux/store";
 import { useRouter } from 'next/navigation';
-import { TextField } from "@mui/material";
+import { Box, TextField } from "@mui/material";
 
 interface Column {
   id: 'id'| 'name' | 'gender' | 'email' | 'dob' | 'phone'| 'city';
@@ -126,6 +126,19 @@ export default function UsersTable() {
         {isAuth?(
             <Paper sx={{ width: '100%',overflow: 'hidden' }}>
                 <ButtonAppBar text={username}/> 
+                <Box sx={{ flexGrow: 1 }}>
+                        <TextField 
+                            id="filled-basic"
+                            label="Search by name"
+                            variant="filled"
+                            fullWidth
+                            sx={{
+                                background: '#fdd73f' ,
+                                width:"100%"
+                            }}
+                            onChange={handleSearchInputChange}
+                        />     
+                </Box>
                 {errorMsg &&(<p style={{textAlign:'center'}}>{errorMsg}</p>)}
                 {loading && (
                     <div style={{ textAlign: 'center', padding: '20px' }}>
@@ -133,22 +146,15 @@ export default function UsersTable() {
                     </div>
                 )}
                 {!loading && (
-                    <TableContainer sx={{ maxHeight: "80vh"}} >
-                    <TextField 
-                        id="filled-basic"
-                        label="Search by name"
-                        variant="filled"
-                        sx={{
-                            width:"100%" ,
-                            background:"#fdd73f"
-                        }}
-                        onChange={handleSearchInputChange}
-                    />
+                    <TableContainer sx={{ maxHeight: "75vh"}} >
+
+                    
+                    
                     <Table stickyHeader aria-label="sticky table">
                         <TableHead>
                         <TableRow>
                             {columns.map((column) => (
-                            <TableCell sx={{background: '#fdd73f' ,fontSize:'16px'}}
+                            <TableCell sx={{fontSize:'16px',fontWeight:"Bold",background:"#EAEAEA"}}
                                 key={column.id}
                                 align={column.align}
                                 style={{ minWidth: column.minWidth }}
@@ -164,7 +170,6 @@ export default function UsersTable() {
                             .filter((row)=>{
                                 return searchInput.toLowerCase()===''?row:row.name.toLowerCase().includes(searchInput)
                             }).map((row) => {
-                                console.log(row);
                             return (
                                 <TableRow hover role="checkbox" tabIndex={-1} key={row.phone}>
                                     {columns.map((column) => {
