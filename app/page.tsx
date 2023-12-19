@@ -1,113 +1,206 @@
-import Image from 'next/image'
+"use client"
+import { useEffect, useState } from "react";
+import { IUsers } from "./models/IUsers";
+import { UsersService } from "./services/UsersService";
+import * as React from 'react';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import CircularProgress from '@mui/material/CircularProgress';
+import ButtonAppBar from "./components/navbar";
+import { useAppSelector } from "@/redux/store";
+import { useRouter } from 'next/navigation';
+import { TextField } from "@mui/material";
 
-export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+interface Column {
+  id: 'id'| 'name' | 'gender' | 'email' | 'dob' | 'phone'| 'city';
+  label: string;
+  minWidth?: number;
+  align?: 'right';
+  format?: (value: number) => string;
+}
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+const columns: readonly Column[] = [
+  { id: 'id', label: 'Id', minWidth: 150 },
+  { id: 'name', label: 'Name', minWidth: 150 },
+  { id: 'gender', label: 'Gender', minWidth: 100 },
+  { id: 'email', label: 'Email', minWidth: 200 },
+  { id: 'phone', label: 'Phone', minWidth: 150 },
+  { id: 'dob', label: 'Age', minWidth: 50 },
+  { id: 'city', label: 'City', minWidth: 150 }
+];
 
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+interface Data {
+  id: string;
+  name: string;
+  gender: string;
+  email: string;
+  phone:string;
+  dob: string;
+  city:string;
+}
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+function createData(
+    id: string,
+    name: string,
+    gender: string,
+    email: string,
+    phone: string,
+    dob: string,
+    city: string,
+  ): Data {
+    return { id, name, gender, email, phone, dob, city };
+  }
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
+export default function UsersTable() {
+    const router = useRouter();
+    interface IState{
+        loading:boolean,
+        users:IUsers[],
+        errorMsg:string
+    }
+    const [state,setState]=useState<IState>({
+        loading:false,
+        users:[]as IUsers[],
+        errorMsg:''
+    })
+    const username=useAppSelector((state)=>state.auth.value.username);
+    const isAuth=useAppSelector((state)=>state.auth.value.isAuth);
+    
+    useEffect(()=>{
+        if (!isAuth) {
+            router.push('/login');
+        }
+        else{
+            setState({...state,loading:true})
+            UsersService.getAllUsers()
+            .then((res)=>setState({
+                ...state,loading:false, users:res.data.results
+            })).catch(err=> setState({
+                ...state,loading:false,errorMsg:err.message
+            }));
+        }
+    },[isAuth]);
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+    
+    
+    const{loading,users,errorMsg}=state
+    const rows: Data[] = users.map((row) =>
+    createData(
+      row.id.value,
+      row.name.first + " " + row.name.last,
+      row.gender,
+      row.email,
+      row.phone,
+      row.dob.age,
+      row.location.city
+    )
+  );
+
+    const [searchInput, setSearchInput] = useState<string>('');
+
+    const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const input = event.target.value;
+        setSearchInput(input);
+    };
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(50);
+
+    const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+    };
+    
+    return (
+    <>
+        {isAuth?(
+            <Paper sx={{ width: '100%',overflow: 'hidden' }}>
+                <ButtonAppBar text={username}/> 
+                {errorMsg &&(<p style={{textAlign:'center'}}>{errorMsg}</p>)}
+                {loading && (
+                    <div style={{ textAlign: 'center', padding: '20px' }}>
+                    <CircularProgress  sx={{ color: '#fdd73f' }}/>
+                    </div>
+                )}
+                {!loading && (
+                    <TableContainer sx={{ maxHeight: "80vh"}} >
+                    <TextField 
+                        id="filled-basic"
+                        label="Search by name"
+                        variant="filled"
+                        sx={{
+                            width:"100%" ,
+                            background:"#fdd73f"
+                        }}
+                        onChange={handleSearchInputChange}
+                    />
+                    <Table stickyHeader aria-label="sticky table">
+                        <TableHead>
+                        <TableRow>
+                            {columns.map((column) => (
+                            <TableCell sx={{background: '#fdd73f' ,fontSize:'16px'}}
+                                key={column.id}
+                                align={column.align}
+                                style={{ minWidth: column.minWidth }}
+                            >
+                                {column.label}
+                            </TableCell>
+                            ))}
+                        </TableRow>
+                        </TableHead>
+                        <TableBody>
+                        {rows
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .filter((row)=>{
+                                return searchInput.toLowerCase()===''?row:row.name.toLowerCase().includes(searchInput)
+                            }).map((row) => {
+                                console.log(row);
+                            return (
+                                <TableRow hover role="checkbox" tabIndex={-1} key={row.phone}>
+                                    {columns.map((column) => {
+                                        const value = row[column.id];
+                                        return (
+                                        <TableCell key={column.id} align={column.align}>
+                                            {column.format && typeof value === 'number'
+                                            ? column.format(value)
+                                            : value}
+                                        </TableCell>
+                                        );
+                                    })}
+                            </TableRow>
+                            );
+                            })}
+                        </TableBody>
+                    </Table>
+                    </TableContainer>
+                )}
+                <TablePagination
+                rowsPerPageOptions={[50, 100, 500,1000,5000]}
+                component="div"
+                count={rows.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                sx={{ background: '#2e3648',color:"white" }}
+                />
+            </Paper>
+        ):(
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+                <CircularProgress size="5rem" sx={{ color: '#fdd73f' }} />
+            </div>
+        )}
+        
+    </>   
+    
+    );
 }
